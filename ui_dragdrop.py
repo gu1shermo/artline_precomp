@@ -36,17 +36,23 @@ class MainWindowWidget(QtWidgets.QWidget):
         self.load_button.clicked.connect(self.load_image_but)
 
         # Image viewing region
-        self.lbl = QtWidgets.QLabel(self)
+        self.lbl0 = QtWidgets.QLabel(self)
+        self.lbl1 = QtWidgets.QLabel(self)
 
         # A horizontal layout to include the button on the left
         layout_button = QtWidgets.QHBoxLayout()
         layout_button.addWidget(self.load_button)
         layout_button.addStretch()
 
+        # A horizontal layout to include the images
+        layout_pix = QtWidgets.QHBoxLayout()
+        layout_pix.addWidget(self.lbl0)
+        layout_pix.addWidget(self.lbl1)
+
         # A Vertical layout to include the button layout and then the image
         layout = QtWidgets.QVBoxLayout()
         layout.addLayout(layout_button)
-        layout.addWidget(self.lbl)
+        layout.addLayout(layout_pix)
 
         self.setLayout(layout)
 
@@ -73,7 +79,8 @@ class MainWindowWidget(QtWidgets.QWidget):
         """
         pixmap = QtGui.QPixmap(self.fname)
         pixmap = pixmap.scaled(500, 500, QtCore.Qt.KeepAspectRatio)
-        self.lbl.setPixmap(pixmap)
+        self.lbl0.setPixmap(pixmap)
+        self.lbl1.setPixmap(pixmap)
 
     # The following three methods set up dragging and dropping for the app
     def dragEnterEvent(self, e):
