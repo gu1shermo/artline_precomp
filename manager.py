@@ -14,14 +14,13 @@ class Manager(object):
         self.window.test1.clicked.connect(self.show_bg)
         self.window.test2.clicked.connect(self.add_layer_test)
         self.window.test3.clicked.connect(self.clear_test)
+        self.pic_manager.pixmap_updated.connect(self.window.show_pixmap)
 
     def show_bg(self):
         pixmap = self.pic_manager.test_bg()
-        self.window.show_pixmap(pixmap)
 
     def add_layer_test(self):
         pixmap = self.pic_manager.test_overlay()
-        self.window.show_pixmap(pixmap)
 
     def clear_test(self):
-        self.window.show_pixmap(None)
+        self.pic_manager.clear()
