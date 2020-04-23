@@ -1,5 +1,29 @@
 from PySide2 import QtWidgets, QtCore, QtGui
 
+import test_ui
+import pictures
+
+
+class TestManager(object):
+    def __init__(self, window):
+
+        self.window = window
+        self.pic_manager = pictures.Manager()
+
+        self.pic_manager.test_bg()
+        pixmap = self.pic_manager.test_overlay()
+        self.window.show_pixmap(pixmap)
+
+        self.connect_signals()
+
+    def connect_signals(self):
+        # selon les tests
+        self.window.fusion_box.currentTextChanged.connect(self.set_overlay_blendmode)
+
+    def set_overlay_blendmode(self, blend_mode):
+        self.pic_manager.set_blend_mode(1, blend_mode)
+        pixmap = self.pic_manager.get_compositing()
+        self.window.show_pixmap(pixmap)
 
 class TestWidget(QtWidgets.QWidget):
     def __init__(self):
@@ -8,19 +32,17 @@ class TestWidget(QtWidgets.QWidget):
         self.setWindowTitle('Test')
 
         layout = QtWidgets.QVBoxLayout(self)
-        self.pic_viewer = PictureViewer()
+        self.pic_viewer = test_ui.PictureViewer()
 
         # pour l'instant je mets juste 4 boutons à pluger comme vous voule
-        self.test1 = FieldButton('test 1')
-        self.test2 = FieldButton('test 2')
-        self.test3 = FieldButton('test 3')
-        self.test4 = FieldButton('test 4')
+        self.fusion_box = QtWidgets.QComboBox()
 
         layout.addWidget(self.pic_viewer)
-
-        for test in (self.test1, self.test2, self.test3, self.test4):
-            layout.addWidget(test)
+        layout.addWidget(self.fusion_box)
         layout.addStretch(1)
+
+        for blend_mode in pictures.BLEND_MODES:
+            self.fusion_box.addItem(blend_mode)
 
     def show_pixmap(self, pixmap):
         if not pixmap:
@@ -77,6 +99,7 @@ def run():
     app = QtWidgets.QApplication(sys.argv)
 
     window = TestWidget()
+    test = TestManager(window)
     window.show()
 
     sys.exit(app.exec_())
