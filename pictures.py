@@ -2,9 +2,11 @@ import PIL
 import PIL.ImageQt              # is needed for .exe version to find it
 import PIL.TgaImagePlugin       # is needed for .exe version to find it
 from psd_tools import PSDImage
-import OpenEXR
+# import OpenEXR
 
-ICONS_ROOT = r'C:\Users\Olivier\Documents\maya\scripts\artline_precomp\icons/'
+import os
+
+ICONS_ROOT = os.path.dirname(__file__).replace('\\', '/') +'/icons/'
 BG_FILE = ICONS_ROOT +'gotham_city.png'
 TEST_FULL = ICONS_ROOT +'why_serious_with_alpha.png'
 TEST_DIFF = ICONS_ROOT +'why_serious_diffuse.png'
@@ -59,7 +61,7 @@ class Manager(object):
         return self.to_qpixmap(image)
     #--------------------------------------------------------------------------
     def add_layer(self, path):
-        if OpenEXR.isOpenExrFile(path):
+        if path.split('.')[-1] == 'exr':
             raise Exception('EXR not implemented yet!')
 
         image = self.converted_tga(path) if path.split('.')[-1] == 'tga' else \
