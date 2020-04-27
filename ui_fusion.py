@@ -25,6 +25,11 @@ import pictures
 class Widget(QWidget):
     def __init__(self):
         QWidget.__init__(self)
+        # pciture manager
+
+
+
+        self.manager_img = pictures.Manager()
 
         self.btn_load_img_1 = QPushButton("Load img1")
         self.btn_load_img_2 = QPushButton("load img2")
@@ -47,7 +52,10 @@ class Widget(QWidget):
         # self.pic_res.setPixmap(pixmap)
 
         self.cbox_actions = QComboBox()
+        self.cbox_definitions = QComboBox()
         self.setup_cbox()
+
+        self.cbox_actions.currentIndexChanged.connect(self.update_blendmode)
 
         self.path = QLineEdit()
 
@@ -57,6 +65,7 @@ class Widget(QWidget):
         self.v_layout.addWidget(self.btn_load_img_1)
         self.v_layout.addWidget(self.btn_load_img_2)
         self.v_layout.addWidget(self.cbox_actions)
+        self.v_layout.addWidget(self.cbox_definitions)
         self.v_layout.addWidget(self.path)
         self.v_layout.addWidget(self.btn_run)
         self.grid.addWidget(self.pic_1, 0, 0)
@@ -66,24 +75,33 @@ class Widget(QWidget):
 
         self.setLayout(self.grid)
 
+    def update_blendmode(self):
+        pass
+
     def run_action(self):
         all_items = [self.cbox_actions.itemText(i) for i in range(self.cbox_actions.count())]
         item_selected = self.cbox_actions.currentText()
         print(all_items)
         print(item_selected)
-        manager_img = pictures.Manager()
-        print(manager_img)
-        manager_img.perform_operation()
+        self.manager_img.set_blend_mode(self.current_layer, item_selected)
+        
+        
+        
+        
 
 
 
     def setup_cbox(self):
         for action in pictures.BLEND_MODES:
             self.cbox_actions.addItem(action)
+        for key, _ in pictures.DEFINITIONS.items():
+            self.cbox_definitions.addItem(key)
+        
 
     def load_img_1(self):
         path_filename = QFileDialog.getOpenFileName(self, "Choose Image", "/home/",)
         self.load_image(path_filename, self.pic_1)
+        self.manager_img.add_layer(path_filename)
 
     def load_img_2(self):
         path_filename = QFileDialog.getOpenFileName(
@@ -93,6 +111,7 @@ class Widget(QWidget):
             "Image Files (*.png *.jpg *.bmp *.tga *.jpeg)",
         )
         self.load_image(path_filename, self.pic_2)
+        self.manager_img.add_layer(path_filename)
 
     def load_image(self, image_path, label):
 
@@ -103,64 +122,10 @@ class Widget(QWidget):
 
         # self.view.fitInView(QRectF(0, 0, pixmap.width(), pixmap.height()), Qt.KeepAspectRatio)
 
-    @Slot()
-    def add_element(self):
-        des = self.description.text()
-        price = self.price.text()
+    
+    
 
-        self.table.insertRow(self.items)
-        description_item = QTableWidgetItem(des)
-        price_item = QTableWidgetItem("{:.2f}".format(float(price)))
-        price_item.setTextAlignment(Qt.AlignRight)
-
-        self.table.setItem(self.items, 0, description_item)
-        self.table.setItem(self.items, 1, price_item)
-
-        self.description.setText("")
-        self.price.setText("")
-
-        self.items += 1
-
-    @Slot()
-    def check_disable(self, s):
-        if not self.description.text() or not self.price.text():
-            self.add.setEnabled(False)
-        else:
-            self.add.setEnabled(True)
-
-    @Slot()
-    def plot_data(self):
-        # Get table information
-        series = QtCharts.QPieSeries()
-        for i in range(self.table.rowCount()):
-            text = self.table.item(i, 0).text()
-            number = float(self.table.item(i, 1).text())
-            series.append(text, number)
-
-        chart = QtCharts.QChart()
-        chart.addSeries(series)
-        chart.legend().setAlignment(Qt.AlignLeft)
-        self.chart_view.setChart(chart)
-
-    @Slot()
-    def quit_application(self):
-        QApplication.quit()
-
-    def fill_table(self, data=None):
-        data = self._data if not data else data
-        for desc, price in data.items():
-            description_item = QTableWidgetItem(desc)
-            price_item = QTableWidgetItem("{:.2f}".format(price))
-            price_item.setTextAlignment(Qt.AlignRight)
-            self.table.insertRow(self.items)
-            self.table.setItem(self.items, 0, description_item)
-            self.table.setItem(self.items, 1, price_item)
-            self.items += 1
-
-    @Slot()
-    def clear_table(self):
-        self.table.setRowCount(0)
-        self.items = 0
+   
 
 
 class MainWindow(QMainWindow):
