@@ -83,8 +83,8 @@ class Manager(object):
     def converted_svg(self, path):
         renderer = QtSvg.QSvgRenderer(path)
 
-        width = renderer.defaultSize().width()
-        height = renderer.defaultSize().height()
+        w = renderer.defaultSize().width()
+        h = renderer.defaultSize().height()
 
         # create empty QIcon with svg file's dimensions
         image = QtGui.QImage(w, h, QtGui.QImage.Format_ARGB32)

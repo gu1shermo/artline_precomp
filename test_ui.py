@@ -1,25 +1,68 @@
 from PySide2 import QtWidgets, QtCore, QtGui
 
+class FieldButton(QtWidgets.QWidget):
+
+    clicked = QtCore.Signal()
+    returnPressed = QtCore.Signal()
+    deleted = QtCore.Signal(str)
+
+    def __init__(self, name, parent=None):
+        super(FieldButton, self).__init__()
+
+        self.layout = QtWidgets.QHBoxLayout(self)
+
+        self.field = QtWidgets.QLineEdit(placeholderText='enter text for {}'.format(name))
+        self.showButton = QtWidgets.QPushButton(name)
+        self.removeButton = QtWidgets.QPushButton("-")
+
+        self.layout.addWidget(self.field)
+        self.layout.addWidget(self.showButton)
+        self.layout.addWidget(self.removeButton)
+
+        # propagate signals
+        self.showButton.clicked.connect(self.clicked.emit)
+        self.removeButton.clicked.connect(self.removePicture)
+
+    def removePicture(self):
+
+        # Signal pour aussi delete l'image dans le pic_manager
+        self.deleted.emit(self.field.text())
+        self.deleteLater()
+
 
 class TestWidget(QtWidgets.QWidget):
+    added = QtCore.Signal(FieldButton)
+
     def __init__(self):
         super(TestWidget, self).__init__()
 
         self.setWindowTitle('Test')
 
-        layout = QtWidgets.QVBoxLayout(self)
+        self.layout = QtWidgets.QVBoxLayout(self)
         self.pic_viewer = PictureViewer()
 
-        # pour l'instant je mets juste 4 boutons à pluger comme vous voule
+        # pour l'instant je mets juste 4 boutons à pluger comme vous voulez
         self.test1 = FieldButton('test 1')
         self.test2 = FieldButton('test 2')
         self.test3 = FieldButton('test 3')
-        self.test4 = FieldButton('test 4')
+        self.fileBrowser = FieldButton('Browse...')
+        self.addFile = QtWidgets.QPushButton("+")
 
-        layout.addWidget(self.pic_viewer)
+        self.addFile.clicked.connect(self.add_fieldButton)
 
-        for test in (self.test1, self.test2, self.test3, self.test4):
-            layout.addWidget(test)
+        self.layout.addWidget(self.pic_viewer)
+
+        for widget in (self.test1, self.test2, self.test3, self.fileBrowser, self.addFile):
+            self.layout.addWidget(widget)
+
+
+    def add_fieldButton(self):
+        new_widget = FieldButton('Browse...')
+
+        self.layout.addWidget(new_widget)
+        self.layout.insertWidget(self.layout.count(), self.addFile)
+        self.added.emit(new_widget)
+
 
     def show_pixmap(self, pixmap):
         if not pixmap:
@@ -33,25 +76,6 @@ class TestWidget(QtWidgets.QWidget):
         self.pic_viewer.setPixmap(resized_pix)
 
 
-class FieldButton(QtWidgets.QWidget):
-
-    clicked = QtCore.Signal()
-    returnPressed = QtCore.Signal()
-
-    def __init__(self, name):
-        super(FieldButton, self).__init__()
-
-        layout = QtWidgets.QHBoxLayout(self)
-
-        self.field = QtWidgets.QLineEdit(placeholderText='enter text for {}'.format(name))
-        self.button = QtWidgets.QPushButton(name)
-
-        layout.addWidget(self.field)
-        layout.addWidget(self.button)
-
-        # propagate signals
-        self.button.clicked.connect(self.clicked.emit)
-        self.field.returnPressed.connect(self.returnPressed.emit)
 
 
 class PictureViewer(QtWidgets.QLabel):
@@ -69,7 +93,6 @@ class PictureViewer(QtWidgets.QLabel):
         else:
             # paint as usual
             super(PictureViewer, self).paintEvent(event)
-
 
 def run():
     import sys

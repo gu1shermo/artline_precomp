@@ -8,7 +8,8 @@ def run():
     app = QtWidgets.QApplication(sys.argv)
 
     window = test_ui.TestWidget()
-    main_manager = manager.Manager(window)
+    browser = QtWidgets.QFileDialog()
+    main_manager = manager.Manager(window, browser)
     window.show()
 
     sys.exit(app.exec_())
