@@ -17,8 +17,9 @@ from PySide2.QtWidgets import (
     QComboBox,
     QGridLayout,
     QFileDialog,
+    QSpinBox,
 )
-from PySide2.QtCharts import QtCharts
+
 import pictures
 
 
@@ -27,24 +28,34 @@ class Widget(QWidget):
         QWidget.__init__(self)
         # pciture manager
 
-
-
         self.manager_img = pictures.Manager()
+        self.layers = []
 
-        self.btn_load_img_1 = QPushButton("Load img1")
-        self.btn_load_img_2 = QPushButton("load img2")
+        self.btn_add_layer = QPushButton("Add layer")
+
+        self.btn_remove_layer = QPushButton("Remove layer")
+        self.btn_clear = QPushButton("Clear")
         self.btn_run = QPushButton("Run")
+
+        self.sbox_alpha = QSpinBox()
+        self.sbox_alpha.setRange(0,100)
+        self.sbox_alpha.setValue(50)
+
+        self.sbox_rgb = QSpinBox()
+
 
         # connect buttons
         # Signals and Slots
-        self.btn_load_img_1.clicked.connect(self.load_img_1)
-        self.btn_load_img_2.clicked.connect(self.load_img_2)
+        self.btn_add_layer.clicked.connect(self.add_layer)
+
+        self.btn_remove_layer.clicked.connect(self.remove_layer)
+        self.btn_clear.clicked.connect(self.clear)
         self.btn_run.clicked.connect(self.run_action)
-        
+
         self.pic_1 = QLabel()
         self.pic_2 = QLabel()
         self.pic_res = QLabel()
-        
+
         # self.pic_1.setGeometry(QRect(10, 40, 500, 500))
         # self.pic_1.setGeometry(QRect(10, 540, 500, 500))
         # self.pic_1.setPixmap(pixmap)
@@ -62,11 +73,15 @@ class Widget(QWidget):
         self.grid = QGridLayout()
         self.v_layout = QVBoxLayout()
 
-        self.v_layout.addWidget(self.btn_load_img_1)
-        self.v_layout.addWidget(self.btn_load_img_2)
+        self.v_layout.addWidget(self.btn_add_layer)
+
         self.v_layout.addWidget(self.cbox_actions)
         self.v_layout.addWidget(self.cbox_definitions)
+        self.v_layout.addWidget(self.sbox_alpha)
+        self.v_layout.addWidget(self.sbox_rgb)
         self.v_layout.addWidget(self.path)
+        self.v_layout.addWidget(self.btn_remove_layer)
+        self.v_layout.addWidget(self.btn_clear)
         self.v_layout.addWidget(self.btn_run)
         self.grid.addWidget(self.pic_1, 0, 0)
         self.grid.addWidget(self.pic_2, 0, 1)
@@ -75,33 +90,42 @@ class Widget(QWidget):
 
         self.setLayout(self.grid)
 
+    def remove_layer(self):
+        self.manager_img.remove_layer(len(self.layers) - 1)
+
+    def clear(self):
+        self.layers = []
+        self.manager_img.clear()
+
     def update_blendmode(self):
         pass
 
     def run_action(self):
-        all_items = [self.cbox_actions.itemText(i) for i in range(self.cbox_actions.count())]
+        all_items = [
+            self.cbox_actions.itemText(i) for i in range(self.cbox_actions.count())
+        ]
         item_selected = self.cbox_actions.currentText()
         print(all_items)
         print(item_selected)
-        self.manager_img.set_blend_mode(self.current_layer, item_selected)
-        
-        
-        
-        
-
-
+        # self.manager_img.set_blend_mode(self.current_layer, item_selected)
 
     def setup_cbox(self):
         for action in pictures.BLEND_MODES:
             self.cbox_actions.addItem(action)
         for key, _ in pictures.DEFINITIONS.items():
             self.cbox_definitions.addItem(key)
-        
 
-    def load_img_1(self):
+    def add_layer(self):
         path_filename = QFileDialog.getOpenFileName(self, "Choose Image", "/home/",)
-        self.load_image(path_filename, self.pic_1)
-        self.manager_img.add_layer(path_filename)
+
+        self.manager_img.add_layer(
+            path_filename[0], blend_mode=self.cbox_actions.currentText()
+        )
+
+        pixmap = QPixmap(path_filename[0])
+        self.pic_1.setPixmap(pixmap)
+
+        self.layers.append(pixmap)
 
     def load_img_2(self):
         path_filename = QFileDialog.getOpenFileName(
@@ -113,19 +137,7 @@ class Widget(QWidget):
         self.load_image(path_filename, self.pic_2)
         self.manager_img.add_layer(path_filename)
 
-    def load_image(self, image_path, label):
-
-        pixmap = QPixmap(image_path[0])
-        label.setPixmap(pixmap)
-
-        print(pixmap)
-
         # self.view.fitInView(QRectF(0, 0, pixmap.width(), pixmap.height()), Qt.KeepAspectRatio)
-
-    
-    
-
-   
 
 
 class MainWindow(QMainWindow):
