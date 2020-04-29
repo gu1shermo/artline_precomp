@@ -91,6 +91,7 @@ class Widget(QWidget):
         self.setLayout(self.grid)
 
     def remove_layer(self):
+        
         self.manager_img.remove_layer(len(self.layers) - 1)
 
     def clear(self):
