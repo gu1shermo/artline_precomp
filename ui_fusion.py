@@ -82,7 +82,7 @@ class Widget(QWidget):
         self.h_layout_add_layer.addWidget(self.btn_add_layer)
         self.h_layout_add_layer.addWidget(self.cbox_actions)
         self.h_layout_add_layer.addWidget(self.cbox_definitions)
-        self.h_layout_add_layer.addLayout(self.form_layout)
+        # self.h_layout_add_layer.addLayout(self.form_layout)
 
         self.h_layout_remove = QHBoxLayout()
         self.h_layout_remove.addWidget(self.btn_remove_layer)
@@ -129,7 +129,7 @@ class Widget(QWidget):
     def add_layer(self):
         path_filename = QFileDialog.getOpenFileName(self, "Choose Image", "/home/",)
 
-        #self.manager_img.set_definition(self.cbox_definitions.currentText())
+        self.manager_img.set_definition(self.cbox_definitions.currentText())
         self.manager_img.add_layer(
             path_filename[0], blend_mode=self.cbox_actions.currentText()
         )
@@ -140,15 +140,7 @@ class Widget(QWidget):
         self.layers.append(pixmap)
         # self.sbox_remove_index.setValue(self.sbox_remove_index.value() + 1)
 
-    def load_img_2(self):
-        path_filename = QFileDialog.getOpenFileName(
-            self,
-            "Choose Image",
-            "/home/",
-            "Image Files (*.png *.jpg *.bmp *.tga *.jpeg)",
-        )
-        self.load_image(path_filename, self.pic_2)
-        self.manager_img.add_layer(path_filename)
+    
 
         # self.view.fitInView(QRectF(0, 0, pixmap.width(), pixmap.height()), Qt.KeepAspectRatio)
 

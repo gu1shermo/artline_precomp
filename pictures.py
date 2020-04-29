@@ -96,7 +96,7 @@ class Manager(QtCore.QObject):
     #--------------------------------------------------------------------------
     def process_image(self):
         """ Get compositing from self.layers and emit result into pixmap_updated signal. """
-
+        print('into process')
         pixmap = self.get_compositing()
         self.pixmap_updated.emit(pixmap)
     #--------------------------------------------------------------------------
