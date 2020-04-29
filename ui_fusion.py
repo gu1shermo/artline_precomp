@@ -61,7 +61,10 @@ class Widget(QWidget):
 
         self.pic_res = QLabel()
 
-        self.manager_img.pixmap_updated.connect(self.pic_res.setPixmap)
+        # self.manager_img.pixmap_updated.connect(self.pic_res.setPixmap)
+        self.connect_signals()
+
+        
         # self.pic_1.setGeometry(QRect(10, 40, 500, 500))
         # self.pic_1.setGeometry(QRect(10, 540, 500, 500))
         # self.pic_1.setPixmap(pixmap)
@@ -82,7 +85,7 @@ class Widget(QWidget):
         self.h_layout_add_layer.addWidget(self.btn_add_layer)
         self.h_layout_add_layer.addWidget(self.cbox_actions)
         self.h_layout_add_layer.addWidget(self.cbox_definitions)
-        # self.h_layout_add_layer.addLayout(self.form_layout)
+        self.h_layout_add_layer.addLayout(self.form_layout)
 
         self.h_layout_remove = QHBoxLayout()
         self.h_layout_remove.addWidget(self.btn_remove_layer)
@@ -97,6 +100,17 @@ class Widget(QWidget):
         self.v_layout.addLayout(self.h_layout_remove)
 
         self.setLayout(self.v_layout)
+    
+    def connect_signals(self):
+        self.manager_img.pixmap_updated.connect(self.pic_res.setPixmap)
+        # self.cbox_actions.currentTextChanged.connect(self.set_overlay_blendmode)
+        # self.cbox_definitions.connect(self.set_definition)
+
+    def set_overlay_blendmode(self, blend_mode):
+        self.manager_img.set_blend_mode(1, self.cbox_actions.currentText())
+
+    def set_definition(self, str_def):
+        self.manager_img.set_definition(self.cbox_definitions.currentText())
 
     def remove_layer(self):
         self.manager_img.remove_layer(self.sbox_remove_index.value())
@@ -111,14 +125,7 @@ class Widget(QWidget):
     def update_blendmode(self):
         pass
 
-    def run_action(self):
-        all_items = [
-            self.cbox_actions.itemText(i) for i in range(self.cbox_actions.count())
-        ]
-        item_selected = self.cbox_actions.currentText()
-        print(all_items)
-        print(item_selected)
-        # self.manager_img.set_blend_mode(self.current_layer, item_selected)
+    
 
     def setup_cbox(self):
         for action in pictures.BLEND_MODES:
@@ -129,7 +136,7 @@ class Widget(QWidget):
     def add_layer(self):
         path_filename = QFileDialog.getOpenFileName(self, "Choose Image", "/home/",)
 
-        self.manager_img.set_definition(self.cbox_definitions.currentText())
+        # self.manager_img.set_definition(self.cbox_definitions.currentText())
         self.manager_img.add_layer(
             path_filename[0], blend_mode=self.cbox_actions.currentText()
         )
