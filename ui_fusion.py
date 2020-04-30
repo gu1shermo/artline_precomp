@@ -61,8 +61,8 @@ class Widget(QWidget):
 
         self.pic_res = QLabel()
 
-        # self.manager_img.pixmap_updated.connect(self.pic_res.setPixmap)
-        self.connect_signals()
+        self.manager_img.pixmap_updated.connect(self.pic_res.setPixmap)
+        # self.connect_signals()
 
         
         # self.pic_1.setGeometry(QRect(10, 40, 500, 500))
@@ -78,7 +78,7 @@ class Widget(QWidget):
         self.form_layout = QFormLayout()
         self.form_layout.addRow("alpha:", self.sbox_alpha)
         self.form_layout.addRow("rgb:", self.sbox_rgb)
-
+ 
         self.cbox_actions.currentIndexChanged.connect(self.update_blendmode)
 
         self.h_layout_add_layer = QHBoxLayout()
@@ -136,20 +136,18 @@ class Widget(QWidget):
     def add_layer(self):
         path_filename = QFileDialog.getOpenFileName(self, "Choose Image", "/home/",)
 
-        # self.manager_img.set_definition(self.cbox_definitions.currentText())
+        #self.manager_img.set_alpha(0, self.sbox_alpha.value())
+        self.manager_img.set_definition(self.cbox_definitions.currentText())
+        
         self.manager_img.add_layer(
             path_filename[0], blend_mode=self.cbox_actions.currentText()
         )
-
-        pixmap = QPixmap(path_filename[0])
-        self.pic_res.setPixmap(pixmap)
-
-        self.layers.append(pixmap)
-        # self.sbox_remove_index.setValue(self.sbox_remove_index.value() + 1)
+        
+        self.sbox_remove_index.setValue(len(self.manager_img.layers))
 
     
 
-        # self.view.fitInView(QRectF(0, 0, pixmap.width(), pixmap.height()), Qt.KeepAspectRatio)
+        
 
 
 class MainWindow(QMainWindow):
