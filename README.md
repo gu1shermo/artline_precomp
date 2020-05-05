@@ -1,4 +1,4 @@
 - depuis le dossier courant: `python __main__.py`
-- sélectionner un mode de superposition de calque, choisir une image avec add layer
-- choisir un index et supprimer le layer à cet index avec remove 1 layer
-- supprimer tous les layers
+- sélectionner un mode de superposition de calque avec la combobox, choisir une image avec le bouton `add layer`
+- choisir un numéro d'index et supprimer le layer à cet index avec `remove 1 layer`
+- supprimer tous les layers avec le bouton `remove all layers`
