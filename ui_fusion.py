@@ -52,7 +52,7 @@ class Widget(QWidget):
         self.btn_remove_layer.clicked.connect(self.remove_layer)
         self.sbox_remove_index = QSpinBox()
         self.sbox_remove_index.setValue(0)
-        self.sbox_remove_index.setRange(0, 100)
+        self.sbox_remove_index.setRange(0, 0)
         self.sbox_remove_index.setSingleStep(1)
 
         self.lbl_index_remove = QLabel("index calque")
@@ -61,10 +61,6 @@ class Widget(QWidget):
 
         self.pic_res = QLabel()
 
-        self.manager_img.pixmap_updated.connect(self.pic_res.setPixmap)
-        # self.connect_signals()
-
-        
         # self.pic_1.setGeometry(QRect(10, 40, 500, 500))
         # self.pic_1.setGeometry(QRect(10, 540, 500, 500))
         # self.pic_1.setPixmap(pixmap)
@@ -78,8 +74,6 @@ class Widget(QWidget):
         self.form_layout = QFormLayout()
         self.form_layout.addRow("alpha:", self.sbox_alpha)
         self.form_layout.addRow("rgb:", self.sbox_rgb)
- 
-        self.cbox_actions.currentIndexChanged.connect(self.update_blendmode)
 
         self.h_layout_add_layer = QHBoxLayout()
         self.h_layout_add_layer.addWidget(self.btn_add_layer)
@@ -100,32 +94,30 @@ class Widget(QWidget):
         self.v_layout.addLayout(self.h_layout_remove)
 
         self.setLayout(self.v_layout)
-    
+
+        self.connect_signals()
+
     def connect_signals(self):
         self.manager_img.pixmap_updated.connect(self.pic_res.setPixmap)
-        # self.cbox_actions.currentTextChanged.connect(self.set_overlay_blendmode)
-        # self.cbox_definitions.connect(self.set_definition)
+        self.cbox_actions.currentTextChanged.connect(self.set_overlay_blendmode)
+        self.cbox_definitions.currentTextChanged.connect(self.set_definition)
 
     def set_overlay_blendmode(self, blend_mode):
-        self.manager_img.set_blend_mode(1, self.cbox_actions.currentText())
+        self.manager_img.set_blend_mode(self.sbox_remove_index.value()-1, self.cbox_actions.currentText())
 
     def set_definition(self, str_def):
         self.manager_img.set_definition(self.cbox_definitions.currentText())
 
     def remove_layer(self):
-        self.manager_img.remove_layer(self.sbox_remove_index.value())
-        self.layers.remove(self.sbox_remove_index.value())
+        self.manager_img.remove_layer(self.sbox_remove_index.value()-1)
 
-        # self.sbox_remove_index.setValue(self.sbox_remove_index.value() - 1)
+        self.sbox_remove_index.setMaximum(self.sbox_remove_index.maximum() -1)
+        if not self.manager_img.layers:
+            self.sbox_remove_index.setRange(0, 0)
 
     def clear(self):
         self.layers = []
         self.manager_img.clear()
-
-    def update_blendmode(self):
-        pass
-
-    
 
     def setup_cbox(self):
         for action in pictures.BLEND_MODES:
@@ -137,17 +129,18 @@ class Widget(QWidget):
         path_filename = QFileDialog.getOpenFileName(self, "Choose Image", "/home/",)
 
         #self.manager_img.set_alpha(0, self.sbox_alpha.value())
-        self.manager_img.set_definition(self.cbox_definitions.currentText())
-        
+        #self.manager_img.set_definition(self.cbox_definitions.currentText())
+
         self.manager_img.add_layer(
             path_filename[0], blend_mode=self.cbox_actions.currentText()
         )
-        
+
+        self.sbox_remove_index.setRange(1, len(self.manager_img.layers))
         self.sbox_remove_index.setValue(len(self.manager_img.layers))
 
-    
 
-        
+
+
 
 
 class MainWindow(QMainWindow):
@@ -170,4 +163,3 @@ class MainWindow(QMainWindow):
     @Slot()
     def exit_app(self, checked):
         QApplication.quit()
-
