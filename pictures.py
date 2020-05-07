@@ -1,7 +1,7 @@
 import PIL
 import PIL.ImageQt
 import PIL.TgaImagePlugin
-from psd_tools import PSDImage
+#from psd_tools import PSDImage
 # import OpenEXR
 
 import os
